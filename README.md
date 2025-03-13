@@ -1,5 +1,5 @@
 # Gravity Product Docs Search in Help Scout
-This extension for Chrome and Firefox browsers adds support for searching the docs.gravityforms.com, docs.gravityflow.io, and docs.gravitysmtp.com websites from within Help Scout. Just type Command + J on Mac or Ctrl + J on Windows.
+This extension for Chrome and Firefox browsers adds support for searching the `docs.gravityforms.com`, `docs.gravityflow.io`, and `docs.gravitysmtp.com` websites from within Help Scout. Just type Command + J on Mac or Ctrl + J on Windows.
 This extension has been tested for multiple Chrome-based browsers (i.e. Chrome, Arc, Brave) and Firefox. **Use at your own risk**
 
 ### Installing Extension in Chrome-Based Browsers
