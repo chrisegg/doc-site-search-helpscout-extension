@@ -1,44 +1,55 @@
 {
   "manifest_version": 3,
-  "name": "Gravity Forms Docs Search",
-  "version": "1.1",
-  "description": "Quickly search Gravity Forms docs and insert links into HelpScout tickets.",
+  "name": "Gravity Product Doc Site Search",
+  "version": "2.0.0",
+  "description": "Quickly search Gravity Forms, Gravity Flow, and Gravity SMTP docs and insert links into HelpScout tickets.",
+  "developer": {
+    "name": "Chris Eggleston",
+    "url": "https://chriseggleston.com"
+  },
   "permissions": [
-	"activeTab",
-	"storage",
-	"scripting"
+    "activeTab",
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
-	"https://docs.gravityforms.com/*",
-	"https://secure.helpscout.net/*",
-	"https://igvglf016g-dsn.algolia.net/*"
+    "https://docs.gravityforms.com/*",
+    "https://docs.gravityflow.io/*",
+    "https://docs.gravitysmtp.com/*",
+    "https://secure.helpscout.net/*",
+    "https://igvglf016g-dsn.algolia.net/*"
   ],
   "background": {
-	"service_worker": "background.js"
+    "service_worker": "background.js"
   },
   "content_scripts": [
-	{
-	  "matches": ["https://secure.helpscout.net/*"],
-	  "js": ["content.js"],
-	  "run_at": "document_idle"
-	}
+    {
+      "matches": ["https://secure.helpscout.net/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*.png"],
+      "matches": ["https://secure.helpscout.net/*"]
+    }
   ],
   "commands": {
-	"open_search": {
-	  "suggested_key": {
-		"default": "Ctrl+J",
-		"mac": "Command+J"
-	  },
-	  "description": "Open the Gravity Forms Docs search box"
-	}
+    "open_search": {
+      "suggested_key": {
+        "default": "Ctrl+J",
+        "mac": "Command+J"
+      },
+      "description": "Open the Docs search box"
+    }
   },
   "action": {
-	"default_popup": "popup.html",
-	"default_icon": {
-	  "16": "icon16.png",
-	  "48": "icon48.png",
-	  "128": "icon128.png"
-	}
-  },
-  "options_page": "options.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  }
 }
