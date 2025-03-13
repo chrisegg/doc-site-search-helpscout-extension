@@ -10,6 +10,8 @@
   ],
   "host_permissions": [
 	"https://docs.gravityforms.com/*",
+	"https://docs.gravityflow.io/*",
+	"https://docs.gravitysmtp.com/*",
 	"https://secure.helpscout.net/*",
 	"https://igvglf016g-dsn.algolia.net/*"
   ],
@@ -23,6 +25,12 @@
 	  "run_at": "document_idle"
 	}
   ],
+  "web_accessible_resources": [
+		{
+		  "resources": ["icons/*.png"],
+		  "matches": ["<all_urls>"]
+		}
+ ],
   "commands": {
 	"open_search": {
 	  "suggested_key": {
