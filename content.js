@@ -152,47 +152,181 @@ function handleSearchResponse(response) {
 	console.log("📡 Raw Search Response:", response);
 
 	// 🔹 Handle different response structures
-	let results = Array.isArray(response) ? response : response.hits; // Gravity Forms uses `hits`, others use an array
+	let posts = [];
+	let categories = [];
+	
+	if (response.posts && response.categories) {
+		// New multi-index response structure
+		posts = response.posts || [];
+		categories = response.categories || [];
+	} else if (Array.isArray(response)) {
+		// Legacy array response (Gravity SMTP)
+		posts = response;
+	} else if (response.hits) {
+		// Legacy hits response
+		posts = response.hits;
+	}
 
-	// 🔹 If response is empty, show "No results found"
-	if (!results || results.length === 0) {
+	// 🔹 If no results found, show message
+	if ((!posts || posts.length === 0) && (!categories || categories.length === 0)) {
 		resultsDiv.innerHTML = "<div style='padding: 8px; color: #888;'>No results found</div>";
 		return;
 	}
 
-	// 🔹 Process search results
-	results.forEach(hit => {
-		let div = document.createElement("div");
-		div.className = "gf-search-result";
-		div.textContent = hit.title || hit.post_title;
-		div.dataset.url = hit.url || hit.link || hit.post_url || hit.permalink;
+	// 🔹 Display categories first (if any)
+	if (categories && categories.length > 0) {
+		// Add section header for categories
+		let categoryHeader = document.createElement("div");
+		categoryHeader.className = "search-section-header";
+		categoryHeader.textContent = "📁 DOCUMENTATION CATEGORIES";
+		categoryHeader.style.cssText = `
+			padding: 8px 5px 4px 5px;
+			font-weight: bold;
+			font-size: 12px;
+			color: #666;
+			background-color: #f8f9fa;
+			border-bottom: 1px solid #e9ecef;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		`;
+		resultsDiv.appendChild(categoryHeader);
 
-		div.style.padding = "5px";
-		div.style.cursor = "pointer";
-		div.style.borderBottom = "1px solid #ddd";
+		// Process category results
+		categories.forEach(category => {
+			let div = document.createElement("div");
+			div.className = "gf-search-result category-result";
+			
+			// Create category display with icon and breadcrumb
+			let categoryContent = document.createElement("div");
+			categoryContent.style.cssText = `
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			`;
+			
+			// Category icon (using a simple tag icon)
+			let icon = document.createElement("span");
+			icon.textContent = "🏷️";
+			icon.style.fontSize = "12px";
+			
+			// Category title
+			let title = document.createElement("span");
+			title.textContent = category.name || category.title || category.term_name;
+			title.style.fontWeight = "500";
+			
+			// Breadcrumb path (if available)
+			let breadcrumb = document.createElement("div");
+			breadcrumb.style.cssText = `
+				font-size: 11px;
+				color: #888;
+				margin-top: 2px;
+			`;
+			breadcrumb.textContent = category.breadcrumb || "Home > " + (category.taxonomy || "Category");
+			
+			categoryContent.appendChild(icon);
+			categoryContent.appendChild(title);
+			div.appendChild(categoryContent);
+			div.appendChild(breadcrumb);
+			
+			div.dataset.url = category.url || category.link || category.permalink || `https://docs.gravityforms.com/category/${category.slug}/`;
 
-		// Clicking copies the result based on user setting
-		div.addEventListener("click", function () {
-			chrome.storage.sync.get(["copyAsMarkdown"], function (data) {
-				let copyAsMarkdown = data.copyAsMarkdown || false; // Default: Copy URL only
+			div.style.cssText = `
+				padding: 8px 5px;
+				cursor: pointer;
+				border-bottom: 1px solid #e9ecef;
+				background-color: #fafbfc;
+			`;
 
-				if (copyAsMarkdown) {
-					copyHyperlink(div.textContent, div.dataset.url);
-				} else {
-					copyText(div.dataset.url);
-				}
-
-				// Remove search box
-				let searchBox = document.getElementById("gf-search-box");
-				if (searchBox) searchBox.remove();
-
-				// Show "Copied!" message
-				showCopiedMessage();
+			// Hover effect
+			div.addEventListener("mouseenter", function() {
+				this.style.backgroundColor = "#f0f1f2";
 			});
-		});
+			div.addEventListener("mouseleave", function() {
+				this.style.backgroundColor = "#fafbfc";
+			});
 
-		resultsDiv.appendChild(div);
-	});
+			// Clicking copies the result based on user setting
+			div.addEventListener("click", function () {
+				chrome.storage.sync.get(["copyAsMarkdown"], function (data) {
+					let copyAsMarkdown = data.copyAsMarkdown || false;
+					let title = category.name || category.title || category.term_name;
+
+					if (copyAsMarkdown) {
+						copyHyperlink(title, div.dataset.url);
+					} else {
+						copyText(div.dataset.url);
+					}
+
+					// Remove search box
+					let searchBox = document.getElementById("gf-search-box");
+					if (searchBox) searchBox.remove();
+
+					// Show "Copied!" message
+					showCopiedMessage();
+				});
+			});
+
+			resultsDiv.appendChild(div);
+		});
+	}
+
+	// 🔹 Display posts (if any)
+	if (posts && posts.length > 0) {
+		// Add section header for posts (only if we also have categories)
+		if (categories && categories.length > 0) {
+			let postsHeader = document.createElement("div");
+			postsHeader.className = "search-section-header";
+			postsHeader.textContent = "📄 DOCUMENTATION PAGES";
+			postsHeader.style.cssText = `
+				padding: 8px 5px 4px 5px;
+				font-weight: bold;
+				font-size: 12px;
+				color: #666;
+				background-color: #f8f9fa;
+				border-bottom: 1px solid #e9ecef;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				margin-top: 5px;
+			`;
+			resultsDiv.appendChild(postsHeader);
+		}
+
+		// Process post results
+		posts.forEach(hit => {
+			let div = document.createElement("div");
+			div.className = "gf-search-result post-result";
+			div.textContent = hit.title || hit.post_title;
+			div.dataset.url = hit.url || hit.link || hit.post_url || hit.permalink;
+
+			div.style.cssText = `
+				padding: 5px;
+				cursor: pointer;
+				border-bottom: 1px solid #ddd;
+			`;
+
+			// Clicking copies the result based on user setting
+			div.addEventListener("click", function () {
+				chrome.storage.sync.get(["copyAsMarkdown"], function (data) {
+					let copyAsMarkdown = data.copyAsMarkdown || false; // Default: Copy URL only
+
+					if (copyAsMarkdown) {
+						copyHyperlink(div.textContent, div.dataset.url);
+					} else {
+						copyText(div.dataset.url);
+					}
+
+					// Remove search box
+					let searchBox = document.getElementById("gf-search-box");
+					if (searchBox) searchBox.remove();
+
+					// Show "Copied!" message
+					showCopiedMessage();
+				});
+			});
+
+			resultsDiv.appendChild(div);
+		});
+	}
 }
 
 // **Copy just the URL**
