@@ -141,7 +141,7 @@ function fetchSearchResults(event) {
 
 		case "gravitykit":
 			console.log("🛠 Using WP API for GravityKit search...");
-			searchEndpoint = `https://gravitykit.com/wp-json/wp/v2/search?search=${encodeURIComponent(query)}&per_page=20`;
+			searchEndpoint = `https://www.gravitykit.com/wp-json/wp/v2/search?search=${encodeURIComponent(query)}&per_page=20`;
 			break;
 
 		default: // ✅ Gravity Forms (default)
@@ -172,11 +172,11 @@ function handleSearchResponse(response) {
 	let categories = [];
 	
 	if (response.posts && response.categories) {
-		// New multi-index response structure
+		// New multi-index response structure (Algolia with categories)
 		posts = response.posts || [];
 		categories = response.categories || [];
 	} else if (Array.isArray(response)) {
-		// Legacy array response (Gravity SMTP)
+		// Array response (Gravity SMTP, GravityWiz, GravityKit)
 		posts = response;
 	} else if (response.hits) {
 		// Legacy hits response

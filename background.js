@@ -72,7 +72,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		else if (message.site === "gravitykit") {
 			// ✅ GravityKit - WP API Search
 			console.log("🛠 Using WP API for GravityKit search...");
-			searchUrl = `https://gravitykit.com/wp-json/wp/v2/search?search=${encodeURIComponent(message.query)}&per_page=20`;
+			searchUrl = `https://www.gravitykit.com/wp-json/wp/v2/search?search=${encodeURIComponent(message.query)}&per_page=20`;
 
 			fetch(searchUrl)
 				.then(response => response.json())
