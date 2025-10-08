@@ -50,6 +50,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				});
 
 			return true; // Keep async response channel open
+		}
+		else if (message.site === "gravitywiz") {
+			// ✅ GravityWiz - WP API Search
+			console.log("🛠 Using WP API for GravityWiz search...");
+			searchUrl = `https://gravitywiz.com/wp-json/wp/v2/search?search=${encodeURIComponent(message.query)}&per_page=20`;
+
+			fetch(searchUrl)
+				.then(response => response.json())
+				.then(data => {
+					console.log("✅ GravityWiz WP API Response:", data);
+					sendResponse({ hits: data });
+				})
+				.catch(error => {
+					console.error("❌ GravityWiz WP API Search request failed:", error);
+					sendResponse({ hits: [] });
+				});
+
+			return true; // Keep async response channel open
+		}
+		else if (message.site === "gravitykit") {
+			// ✅ GravityKit - WP API Search
+			console.log("🛠 Using WP API for GravityKit search...");
+			searchUrl = `https://gravitykit.com/wp-json/wp/v2/search?search=${encodeURIComponent(message.query)}&per_page=20`;
+
+			fetch(searchUrl)
+				.then(response => response.json())
+				.then(data => {
+					console.log("✅ GravityKit WP API Response:", data);
+					sendResponse({ hits: data });
+				})
+				.catch(error => {
+					console.error("❌ GravityKit WP API Search request failed:", error);
+					sendResponse({ hits: [] });
+				});
+
+			return true; // Keep async response channel open
 		} 
 		else {
 			console.error("❌ Unknown doc site requested:", message.site);

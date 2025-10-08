@@ -29,6 +29,12 @@ function openSearchBox() {
 				<button data-site="gravitysmtp" class="site-button" title="Gravity SMTP">
 					<img src="icons/gravitysmtp.png" alt="Gravity SMTP">
 				</button>
+				<button data-site="gravitywiz" class="site-button" title="GravityWiz">
+					<img src="icons/gravitywiz.png" alt="GravityWiz">
+				</button>
+				<button data-site="gravitykit" class="site-button" title="GravityKit">
+					<img src="icons/gravitykit.png" alt="GravityKit">
+				</button>
 			</div>
 
 			<!-- 🔹 Search Input Field -->
@@ -128,6 +134,16 @@ function fetchSearchResults(event) {
 			searchEndpoint = `https://docs.gravitysmtp.com/wp-json/wp/v2/search?search=${encodeURIComponent(query)}&per_page=20`;
 			break;
 
+		case "gravitywiz":
+			console.log("🛠 Using WP API for GravityWiz search...");
+			searchEndpoint = `https://gravitywiz.com/wp-json/wp/v2/search?search=${encodeURIComponent(query)}&per_page=20`;
+			break;
+
+		case "gravitykit":
+			console.log("🛠 Using WP API for GravityKit search...");
+			searchEndpoint = `https://gravitykit.com/wp-json/wp/v2/search?search=${encodeURIComponent(query)}&per_page=20`;
+			break;
+
 		default: // ✅ Gravity Forms (default)
 			console.log("🛠 Using Algolia for Gravity Forms search...");
 			chrome.runtime.sendMessage(
@@ -137,7 +153,7 @@ function fetchSearchResults(event) {
 			return;
 	}
 
-	// Fetch results for Gravity SMTP (uses WP API)
+	// Fetch results for WordPress API sites (Gravity SMTP, GravityWiz, GravityKit)
 	fetch(searchEndpoint)
 		.then(response => response.json())
 		.then(handleSearchResponse)
@@ -388,8 +404,9 @@ function injectSearchStyles() {
 		#search-site-selector {
 			display: flex;
 			justify-content: center;
-			gap: 8px;
+			gap: 6px;
 			margin-bottom: 10px;
+			flex-wrap: wrap;
 		}
 		#gf-search-input {
 			width: 100%; /* Ensures full width */
